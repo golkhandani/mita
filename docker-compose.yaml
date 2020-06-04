@@ -1,0 +1,49 @@
+version: '3.7'
+
+# starts 4 docker containers running minio server instances. Each
+# minio server's web interface will be accessible on the host at port
+# 9001 through 9004.
+services:
+  minio-test:
+      image: 'bitnami/minio:latest'
+      container_name: minio-test
+      ports:
+        - '9000:9000'
+      environment:
+        - MINIO_ACCESS_KEY=minio-access-key
+        - MINIO_SECRET_KEY=minio-secret-key
+
+  redis-test:
+    container_name: redis-test
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redisdata1:/data/db
+    command: --requirepass secret
+    networks:
+      - test
+
+  mongo-test:
+    container_name: mongo-test
+    image: mongo:4.0
+    ports:
+      - 30003:27017
+    volumes:
+      - mongodata1:/data/db
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=admin-123
+    #   - MONGO_INITDB_ROOT_PASSWORD=password-123
+    networks:
+      - test
+    
+networks:
+  test:
+
+volumes:
+  data1-1:
+  data1-2:
+  redisdata1:
+    driver: local
+  mongodata1:
+    driver: local
